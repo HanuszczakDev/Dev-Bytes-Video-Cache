@@ -17,11 +17,9 @@
 
 package com.hanuszczak.devbytesvideocache.database
 
+import android.content.Context
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface VideoDao {
@@ -30,4 +28,30 @@ interface VideoDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg videos: DatabaseVideo)
+}
+
+@Database(entities = [DatabaseVideo::class], version = 1)
+abstract class VideosDatabase : RoomDatabase() {
+    abstract val videoDao: VideoDao
+
+    companion object {
+        @Volatile
+        private var INSTANCE: VideosDatabase? = null
+
+        fun getInstance(context: Context): VideosDatabase {
+            synchronized(this) {
+                var instance = INSTANCE
+                if (instance == null) {
+                    instance = Room.databaseBuilder(
+                        context.applicationContext,
+                        VideosDatabase::class.java,
+                        "videos"
+                    ).build()
+                    INSTANCE = instance
+                }
+                return instance
+            }
+        }
+    }
+
 }
