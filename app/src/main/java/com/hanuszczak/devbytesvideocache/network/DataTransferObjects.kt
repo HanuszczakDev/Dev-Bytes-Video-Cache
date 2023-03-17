@@ -17,6 +17,7 @@
 
 package com.hanuszczak.devbytesvideocache.network
 
+import com.hanuszczak.devbytesvideocache.database.DatabaseVideo
 import com.hanuszczak.devbytesvideocache.domain.Video
 import com.squareup.moshi.JsonClass
 
@@ -62,4 +63,16 @@ fun NetworkVideoContainer.asDomainModel(): List<Video> {
                 updated = it.updated,
                 thumbnail = it.thumbnail)
     }
+}
+
+fun NetworkVideoContainer.asDatabaseModel(): Array<DatabaseVideo> {
+    return videos.map {
+        DatabaseVideo(
+            title = it.title,
+            description = it.description,
+            url = it.url,
+            updated = it.updated,
+            thumbnail = it.thumbnail
+        )
+    }.toTypedArray()
 }
