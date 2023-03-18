@@ -16,3 +16,28 @@
  */
 
 package com.hanuszczak.devbytesvideocache.repository
+
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.Transformations
+import com.hanuszczak.devbytesvideocache.database.VideosDatabase
+import com.hanuszczak.devbytesvideocache.database.asDomainModel
+import com.hanuszczak.devbytesvideocache.domain.Video
+import com.hanuszczak.devbytesvideocache.network.Network
+import com.hanuszczak.devbytesvideocache.network.asDatabaseModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+
+class VideosRepository(private val database: VideosDatabase) {
+
+    val videos: LiveData<List<Video>> = Transformations
+        .map(database.videoDao.getVideos()) {
+        it.asDomainModel()
+    }
+
+    suspend fun refreshVideos() {
+        withContext(Dispatchers.IO) {
+            val playlist = Network.devbytes.getPlaylist().await()
+            database.videoDao.insertAll(*playlist.asDatabaseModel())
+        }
+    }
+}
