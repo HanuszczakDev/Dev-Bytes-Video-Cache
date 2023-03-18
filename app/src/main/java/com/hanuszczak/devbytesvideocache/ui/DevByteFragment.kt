@@ -30,6 +30,9 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.hanuszczak.devbytesvideocache.R
+import com.hanuszczak.devbytesvideocache.databinding.DevbyteItemBinding
+import com.hanuszczak.devbytesvideocache.databinding.FragmentDevByteBinding
 import com.hanuszczak.devbytesvideocache.domain.Video
 import com.hanuszczak.devbytesvideocache.viewmodels.DevByteViewModel
 

@@ -19,9 +19,11 @@ package com.hanuszczak.devbytesvideocache.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.*
+import com.hanuszczak.devbytesvideocache.database.VideosDatabase
 import com.hanuszczak.devbytesvideocache.domain.Video
 import com.hanuszczak.devbytesvideocache.network.Network
 import com.hanuszczak.devbytesvideocache.network.asDomainModel
+import com.hanuszczak.devbytesvideocache.repository.VideosRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -40,56 +42,20 @@ import java.io.IOException
  */
 class DevByteViewModel(application: Application) : AndroidViewModel(application) {
 
-    /**
-     *
-     */
+    private val database = VideosDatabase.getInstance(application)
+    private val videosRepository = VideosRepository(database)
 
-    /**
-     *
-     */
-
-    /**
-     * A playlist of videos that can be shown on the screen. This is private to avoid exposing a
-     * way to set this value to observers.
-     */
-    private val _playlist = MutableLiveData<List<Video>>()
-
-    /**
-     * A playlist of videos that can be shown on the screen. Views should use this to get access
-     * to the data.
-     */
-    val playlist: LiveData<List<Video>>
-        get() = _playlist
-
-    /**
-     * init{} is called immediately when this ViewModel is created.
-     */
     init {
-        refreshDataFromNetwork()
+        viewModelScope.launch { videosRepository.refreshVideos() }
     }
 
-    /**
-     * Refresh data from network and pass it via LiveData. Use a coroutine launch to get to
-     * background thread.
-     */
-    private fun refreshDataFromNetwork() = viewModelScope.launch {
-        try {
-            val playlist = Network.devbytes.getPlaylist().await()
-            _playlist.postValue(playlist.asDomainModel())
-        } catch (networkError: IOException) {
-            // Show an infinite loading spinner if the request fails
-            // challenge exercise: show an error to the user if the network request fails
-        }
-    }
-
-    /**
-     */
+    val playlist = videosRepository.videos
 
     /**
      * Factory for constructing DevByteViewModel with parameter
      */
     class Factory(val app: Application) : ViewModelProvider.Factory {
-        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(DevByteViewModel::class.java)) {
                 @Suppress("UNCHECKED_CAST")
                 return DevByteViewModel(app) as T
