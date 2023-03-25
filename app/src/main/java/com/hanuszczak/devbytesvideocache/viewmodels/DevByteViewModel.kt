@@ -18,6 +18,7 @@
 package com.hanuszczak.devbytesvideocache.viewmodels
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.*
 import com.hanuszczak.devbytesvideocache.database.VideosDatabase
 import com.hanuszczak.devbytesvideocache.domain.Video
@@ -28,6 +29,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.io.IOException
 
 /**
@@ -46,7 +48,13 @@ class DevByteViewModel(application: Application) : AndroidViewModel(application)
     private val videosRepository = VideosRepository(database)
 
     init {
-        viewModelScope.launch { videosRepository.refreshVideos() }
+        viewModelScope.launch {
+            try {
+                videosRepository.refreshVideos()
+            } catch (e: Exception) {
+                Timber.e("DevByteViewModel", "exception in init block: ${e.localizedMessage}")
+            }
+        }
     }
 
     val playlist = videosRepository.videos
