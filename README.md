@@ -28,7 +28,7 @@ What is a mobile application that can’t obtain data in real time through the i
 - Build Repository
 - Background WorkManager
 - Worker
-- Schedule Backround Work
+- Schedule Background Work
 - Caching
 - Handling no Internet Connection
 
