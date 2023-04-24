@@ -38,7 +38,7 @@ What is a mobile application that can’t obtain data in real time through the i
 
 ![Online Caching](images/OnlineCaching.gif)
 
-### Offline Caching
+### Offline repository
 
 ![Offline Caching](images/OfflineCaching.gif)
 
